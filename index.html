@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Стан судових справ</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Стан судових справ</h1>
+
+  <section id="filters">
+    <h2>Фільтри</h2>
+    <div class="filter-group">
+      <label>Судочинство</label>
+      <div id="filter-procedure" class="checkbox-group">
+        <!-- will be populated by JS -->
+      </div>
+    </div>
+    <div class="filter-group">
+      <label>Стан</label>
+      <div id="filter-status" class="checkbox-group">
+        <!-- will be populated by JS -->
+      </div>
+    </div>
+    <div class="filter-group">
+      <label for="sort-select">Сортування</label>
+      <select id="sort-select">
+        <option value="submission_date_desc" selected>За датою подання (спадання)</option>
+        <option value="submission_date_asc">За датою подання (зростання)</option>
+        <option value="last_change_date_desc">За датою останньої зміни стану (спадання)</option>
+        <option value="last_change_date_asc">За датою останньої зміни стану (зростання)</option>
+      </select>
+    </div>
+  </section>
+
+  <section id="cases-container">
+    <details open>
+      <summary>Особисті справи</summary>
+      <div class="cards-container" id="category-personal"></div>
+    </details>
+    <details open>
+      <summary>Представництво</summary>
+      <div class="cards-container" id="category-representation"></div>
+    </details>
+    <details open>
+      <summary>Інші справи</summary>
+      <div class="cards-container" id="category-other"></div>
+    </details>
+  </section>
+
+<script src="script.js"></script>
+</body>
+</html>

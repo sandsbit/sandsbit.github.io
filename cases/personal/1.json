@@ -1,0 +1,52 @@
+{
+  "title": "Назва справи",
+  "case_number": "Номер справи",
+  "first_instance_type": "Позовне",
+  "submission_date": "2009-11-11",
+  "current_court": "Модній суд",
+  "claim_price": 3000,
+  "procedure": "Адміністративне",
+  "status": "Розглядається",
+  "other_courts": [],
+  "parties": [
+    {
+      "status": "Позивач",
+      "name": "Никита"
+    },
+    {
+      "status": "Відповідач",
+      "name": "Кирилл"
+    }
+  ],
+  "proceedings": [
+    {
+      "number": "вввв",
+      "comment": "ввв"
+    }
+  ],
+  "claims": [
+    "вввввввввв"
+  ],
+  "history": [
+    {
+      "date": "2009-11-11",
+      "event": "АВы"
+    },
+    {
+      "date": "2011-11-11",
+      "event": "ВОвоов"
+    }
+  ],
+  "court_composition": [
+    {
+      "instance": "Перша",
+      "panel": [
+        {
+          "name": "Вловоовов",
+          "status": "ВОв"
+        }
+      ]
+    }
+  ],
+  "claim_description": "хуйню"
+}
