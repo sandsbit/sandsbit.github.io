@@ -1,161 +1,45 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Деталі справи</title>
-<link rel="stylesheet" href="styles.css" />
-<style>
-  body { padding: 1rem 2rem; max-width: 800px; margin: auto; background: #f9f9f9; }
-  h1 { font-weight: 700; margin-bottom: 1rem; }
-  .field-label { font-weight: 600; margin-top: 1rem; }
-  .field-value { margin-left: 0.5rem; white-space: pre-wrap; }
-  .list-item { margin-left: 1.5rem; }
-  .section { margin-bottom: 1.5rem; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Судова справа</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Деталі справи</h1>
-  <div id="case-details">Завантаження...</div>
 
-<script>
-  // Utility to parse query params
-  function getQueryParam(param) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param);
-  }
+<a href="index.html">← До переліку справ</a>
 
-  function renderList(title, items) {
-    if (!items || !items.length) return '';
-    let html = `<div class="section"><div class="field-label">${title}:</div><ul>`;
-    items.forEach(item => {
-      if (typeof item === "string") {
-        html += `<li class="list-item">${item}</li>`;
-      } else if (Array.isArray(item)) {
-        // list of pairs or arrays
-        html += `<li class="list-item">${item.join(' — ')}</li>`;
-      } else if (typeof item === 'object') {
-        html += `<li class="list-item">${JSON.stringify(item)}</li>`;
-      }
-    });
-    html += '</ul></div>';
-    return html;
-  }
+<main id="case-details">
+  <h1 id="case-title"></h1>
+  <div id="case-meta"></div>
 
-  function renderComplexCourtStructure(courtList) {
-    if (!courtList || !courtList.length) return '';
-    let html = `<div class="section"><div class="field-label">Склад суду:</div>`;
-    courtList.forEach(([instantsia, kolegiya]) => {
-      html += `<div><strong>${instantsia}</strong><ul>`;
-      kolegiya.forEach(([judgeName, judgeStatus]) => {
-        html += `<li class="list-item">${judgeName} — ${judgeStatus}</li>`;
-      });
-      html += `</ul></div>`;
-    });
-    html += '</div>';
-    return html;
-  }
+  <section>
+    <h2>Загальна інформація</h2>
+    <div id="general-info"></div>
+  </section>
 
-  function formatDate(isoDate) {
-    if (!isoDate) return "";
-    const d = new Date(isoDate);
-    if (isNaN(d)) return "";
-    return d.toLocaleDateString("uk-UA", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  }
+  <section>
+    <h2>Сторони та треті особи</h2>
+    <ul id="parties-list"></ul>
+  </section>
 
-  async function loadCaseData(category, file) {
-    try {
-      const res = await fetch(`cases/${category}/${file}`);
-      if (!res.ok) throw new Error('Помилка завантаження справи');
-      const data = await res.json();
-      return data;
-    } catch (e) {
-      return null;
-    }
-  }
+  <section>
+    <h2>Склад суду</h2>
+    <div id="court-composition"></div>
+  </section>
 
-  async function main() {
-    const category = getQueryParam("category");
-    const file = getQueryParam("file");
-    const container = document.getElementById("case-details");
+  <section>
+    <h2>Позовні вимоги</h2>
+    <ul id="claims-list"></ul>
+  </section>
 
-    if (!category || !file) {
-      container.textContent = "Неправильний запит. Відсутні параметри справи.";
-      return;
-    }
+  <section>
+    <h2>Хід справи</h2>
+    <ul id="progress-list"></ul>
+  </section>
+</main>
 
-    const data = await loadCaseData(category, file);
-    if (!data) {
-      container.textContent = "Не вдалося завантажити справу.";
-      return;
-    }
-
-    let html = '';
-
-    html += `<div><span class="field-label">Назва:</span><span class="field-value">${data.title || ''}</span></div>`;
-    html += `<div><span class="field-label">Номер справи:</span><span class="field-value">${data.case_number || ''}</span></div>`;
-    html += `<div><span class="field-label">Тип провадження в суді першої інстанції:</span><span class="field-value">${data.first_instance_type || ''}</span></div>`;
-    html += `<div><span class="field-label">Дата подання:</span><span class="field-value">${formatDate(data.submission_date)}</span></div>`;
-    html += `<div><span class="field-label">Поточний суд:</span><span class="field-value">${data.current_court || ''}</span></div>`;
-
-    if (data.other_courts && data.other_courts.length) {
-      html += renderList("Інші суди", data.other_courts);
-    }
-
-    if (data.proceedings && data.proceedings.length) {
-      // proceedings: list of [number, comment]
-      html += `<div class="section"><div class="field-label">Провадження:</div><ul>`;
-      data.proceedings.forEach(([num, comment]) => {
-        html += `<li class="list-item">${num} — ${comment}</li>`;
-      });
-      html += '</ul></div>';
-    }
-
-    if (data.parties && data.parties.length) {
-      html += `<div class="section"><div class="field-label">Сторони та треті особи:</div><ul>`;
-      data.parties.forEach(({status, name}) => {
-        html += `<li class="list-item">${status} — ${name}</li>`;
-      });
-      html += '</ul></div>';
-    }
-
-    if (data.court_structure && data.court_structure.length) {
-      // court_structure is list of [instantsia: string, kolegiya: list of [string, string]]
-      html += renderComplexCourtStructure(data.court_structure);
-    }
-
-    if (data.claim_description) {
-      html += `<div><span class="field-label">Опис позову:</span><div class="field-value">${data.claim_description}</div></div>`;
-    }
-
-    if (data.claim_price !== undefined) {
-      html += `<div><span class="field-label">Ціна позову:</span><span class="field-value">${data.claim_price}</span></div>`;
-    }
-
-    if (data.claims && data.claims.length) {
-      html += renderList("Позовні вимоги", data.claims);
-    }
-
-    html += `<div><span class="field-label">Судочинство:</span><span class="field-value">${data.procedure || ''}</span></div>`;
-    html += `<div><span class="field-label">Стан:</span><span class="field-value">${data.status || ''}</span></div>`;
-
-    if (data.case_progress && data.case_progress.length) {
-      html += `<div class="section"><div class="field-label">Хід справи:</div><ul>`;
-      data.case_progress.forEach(([date, desc]) => {
-        html += `<li class="list-item">${formatDate(date)} — ${desc}</li>`;
-      });
-      html += '</ul></div>';
-    }
-
-    container.innerHTML = html;
-  }
-
-  main();
-</script>
-
+<script src="case.js"></script>
 </body>
 </html>

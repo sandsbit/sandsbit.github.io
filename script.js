@@ -88,10 +88,10 @@ async function loadAllCases() {
         loadCase(cat, file).then((data) => {
           if (data) {
             data._category = cat;
+            data._file = file;
             allCases.push(data);
           }
-        })
-      );
+        });
     }
   }
   await Promise.all(promises);
@@ -100,13 +100,17 @@ async function loadAllCases() {
 // -------------- Rendering --------------
 
 function statusClass(status) {
-  if (status === "Подано") return "Подано";
-  if (status === "Розглянуто") return "Розглянуто";
-  if (status === "Набрало законної сили, виконанню не підлягає") return "Набрало законної сили, виконанню не підлягає";
-  if (status === "Виконується" || status === "Виконано") return status;
-  if (status === "Відмовлено в розгляді або справку відкликано") return "Відмовлено в розгляді або справку відкликано";
-  return "other";
+  if (status === "Подано") return "status-podano";
+  if (status === "Розглянуто") return "status-rozglyanuto";
+  if (status === "Набрало законної сили, виконанню не підлягає")
+    return "status-final";
+  if (status === "Виконується" || status === "Виконано")
+    return "status-execution";
+  if (status === "Відмовлено в розгляді або справку відкликано")
+    return "status-rejected";
+  return "status-other";
 }
+
 
 function namesByPrefix(parties, prefix) {
   if (!Array.isArray(parties)) return "";
@@ -193,13 +197,12 @@ function renderCard(data) {
   court.textContent = data.current_court || "";
   card.appendChild(court);
 
-    // Add click handler
-  card.style.cursor = "pointer";
   card.addEventListener("click", () => {
-    // open new tab with query parameters to identify the case
-    const url = `case.html?category=${encodeURIComponent(data._category)}&file=${encodeURIComponent(filename)}`;
-    window.open(url, "_blank");
-  });
+  const url = new URL("case.html", window.location.origin + window.location.pathname.replace(/index\.html$/, ""));
+  url.searchParams.set("category", data._category);
+  url.searchParams.set("file", data._file);
+  window.open(url.toString(), "_blank");
+});
 
   return card;
 }
@@ -243,7 +246,7 @@ function applyFiltersAndRender() {
   // render cards by category
   for (const c of filtered) {
     const container = document.getElementById(categories[c._category]);
-    if (container) container.appendChild(renderCard(c, file));
+    if (container) container.appendChild(renderCard(c));
   }
 }
 
