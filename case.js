@@ -23,31 +23,32 @@ async function loadCase() {
 
 
 function renderCase(data) {
-  document.getElementById("case-title").textContent = data.title || "Без назви";
+  const container = document.getElementById("case-details");
+  container.innerHTML = ""; // clear previous
 
-  document.getElementById("case-meta").textContent =
-    `${data.case_number || ""} · ${data.procedure || ""} · ${data.status || ""}`;
-
-  const general = document.getElementById("general-info");
-  general.innerHTML = `
-    <p><strong>Дата подання:</strong> ${data.submission_date || ""}</p>
+  // Загальна інформація
+  const generalSection = document.createElement("section");
+  generalSection.id = "general-info";
+  generalSection.innerHTML = `
+    <h2>Загальна інформація</h2>
+    <p><strong>Назва:</strong> ${data.title || ""}</p>
+    <p><strong>Номер справи:</strong> ${data.case_number || ""}</p>
+    <p><strong>Тип провадження в суді першої інстанції:</strong> ${data.first_instance_type || ""}</p>
+    <p><strong>Дата подання:</strong> ${formatDate(data.submission_date)}</p>
     <p><strong>Поточний суд:</strong> ${data.current_court || ""}</p>
-    <p><strong>Опис справи:</strong> ${data.claim_description || ""}</p>
-    ${data.claim_price ? `<p><strong>Ціна позову:</strong> ${data.claim_price}</p>` : ""}
+    <p><strong>Ціна позову:</strong> ${data.claim_price != null ? data.claim_price : ""}</p>
   `;
+  container.appendChild(generalSection);
 
-
-    // Провадження
+  // Провадження (from data.proceedings)
   const provadzhennyaSection = document.createElement("section");
-  const provadzhennyaTitle = document.createElement("h2");
-  provadzhennyaTitle.textContent = "Провадження";
-  provadzhennyaSection.appendChild(provadzhennyaTitle);
-
+  provadzhennyaSection.innerHTML = `<h2>Провадження</h2>`;
   const provadzhennyaList = document.createElement("ul");
-  if (Array.isArray(data.procedure_entries)) {
-    data.procedure_entries.forEach(([num, comment]) => {
+
+  if (Array.isArray(data.proceedings) && data.proceedings.length > 0) {
+    data.proceedings.forEach(p => {
       const li = document.createElement("li");
-      li.textContent = `${num}${comment ? " — " + comment : ""}`;
+      li.textContent = `${p.number}${p.comment ? " — " + p.comment : ""}`;
       provadzhennyaList.appendChild(li);
     });
   } else {
@@ -55,26 +56,35 @@ function renderCase(data) {
     li.textContent = "Немає даних";
     provadzhennyaList.appendChild(li);
   }
+
   provadzhennyaSection.appendChild(provadzhennyaList);
-  document.getElementById("case-details").appendChild(provadzhennyaSection);
+  container.appendChild(provadzhennyaSection);
 
+  // Сторони та треті особи (bold status)
+  const partiesSection = document.createElement("section");
+  partiesSection.innerHTML = `<h2>Сторони та треті особи</h2>`;
+  const partiesList = document.createElement("ul");
 
-  // Сторони та треті особи — bold status
-  const parties = document.getElementById("parties-list");
-  parties.innerHTML = "";
-  (data.parties || []).forEach(p => {
+  if (Array.isArray(data.parties) && data.parties.length > 0) {
+    data.parties.forEach(p => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${p.status}</strong>: ${p.name}`;
+      partiesList.appendChild(li);
+    });
+  } else {
     const li = document.createElement("li");
-    li.innerHTML = `<strong>${p.status}</strong>: ${p.name}`;
-    parties.appendChild(li);
-  });
+    li.textContent = "Немає даних";
+    partiesList.appendChild(li);
+  }
 
-    // Інші суди
+  partiesSection.appendChild(partiesList);
+  container.appendChild(partiesSection);
+
+  // Інші суди (right after parties)
   const othersSection = document.createElement("section");
-  const othersTitle = document.createElement("h2");
-  othersTitle.textContent = "Інші суди";
-  othersSection.appendChild(othersTitle);
-
+  othersSection.innerHTML = `<h2>Інші суди</h2>`;
   const othersList = document.createElement("ul");
+
   if (Array.isArray(data.other_courts) && data.other_courts.length > 0) {
     data.other_courts.forEach(court => {
       const li = document.createElement("li");
@@ -86,51 +96,78 @@ function renderCase(data) {
     li.textContent = "Немає даних";
     othersList.appendChild(li);
   }
+
   othersSection.appendChild(othersList);
-  document.getElementById("case-details").appendChild(othersSection);
+  container.appendChild(othersSection);
 
-  const courts = document.getElementById("court-composition");
-  (data.court_composition || []).forEach(entry => {
-    const div = document.createElement("div");
-    div.innerHTML = `<strong>${entry.instance}</strong>`;
-    const ul = document.createElement("ul");
-    entry.panel.forEach(j => {
-      const li = document.createElement("li");
-      li.textContent = `${j.name}${j.status ? " — " + j.status : ""}`;
-      ul.appendChild(li);
+  // Судовий склад
+  const courtSection = document.createElement("section");
+  courtSection.innerHTML = `<h2>Склад суду</h2>`;
+
+  if (Array.isArray(data.court_composition) && data.court_composition.length > 0) {
+    data.court_composition.forEach(instance => {
+      const instDiv = document.createElement("div");
+      instDiv.innerHTML = `<h3>${instance.instance}</h3>`;
+      const panelList = document.createElement("ul");
+      if (Array.isArray(instance.panel)) {
+        instance.panel.forEach(member => {
+          const li = document.createElement("li");
+          li.textContent = `${member.name} (${member.status})`;
+          panelList.appendChild(li);
+        });
+      }
+      instDiv.appendChild(panelList);
+      courtSection.appendChild(instDiv);
     });
-    div.appendChild(ul);
-    courts.appendChild(div);
-  });
-
+  } else {
+    courtSection.appendChild(document.createTextNode("Немає даних"));
+  }
+  container.appendChild(courtSection);
 
   // Позовні вимоги — numbered list
-  const claimsParent = document.getElementById("claims-list");
-  claimsParent.innerHTML = "";
-  const ol = document.createElement("ol");
-  (data.claims || []).forEach(c => {
-    const li = document.createElement("li");
-    li.textContent = c;
-    ol.appendChild(li);
-  });
-  claimsParent.appendChild(ol);
-
-
-  // Хід справи — with fallback
-  const progressParent = document.getElementById("progress-list");
-  progressParent.innerHTML = "";
-  if (Array.isArray(data.progress) && data.progress.length > 0) {
-    data.progress.forEach(step => {
+  const claimsSection = document.createElement("section");
+  claimsSection.innerHTML = `<h2>Позовні вимоги</h2>`;
+  const claimsList = document.createElement("ol");
+  if (Array.isArray(data.claims) && data.claims.length > 0) {
+    data.claims.forEach(claim => {
       const li = document.createElement("li");
-      li.textContent = `${step.date}: ${step.text}`;
-      progressParent.appendChild(li);
+      li.textContent = claim;
+      claimsList.appendChild(li);
     });
   } else {
     const li = document.createElement("li");
     li.textContent = "Немає даних";
-    progressParent.appendChild(li);
+    claimsList.appendChild(li);
+  }
+  claimsSection.appendChild(claimsList);
+  container.appendChild(claimsSection);
+
+  // Опис позову
+  const descriptionSection = document.createElement("section");
+  descriptionSection.innerHTML = `<h2>Опис позову</h2><p>${data.claim_description || "Немає даних"}</p>`;
+  container.appendChild(descriptionSection);
+
+  // Хід справи (history)
+  const progressSection = document.createElement("section");
+  progressSection.innerHTML = `<h2>Хід справи</h2>`;
+  const progressList = document.createElement("ul");
+
+  if (Array.isArray(data.history) && data.history.length > 0) {
+    data.history.forEach(item => {
+      const li = document.createElement("li");
+      const dateFormatted = formatDate(item.date);
+      li.textContent = `${dateFormatted}: ${item.event}`;
+      progressList.appendChild(li);
+    });
+  } else {
+    const li = document.createElement("li");
+    li.textContent = "Немає даних";
+    progressList.appendChild(li);
   }
 
+  progressSection.appendChild(progressList);
+  container.appendChild(progressSection);
 }
+
 
 loadCase();
