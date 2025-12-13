@@ -193,6 +193,14 @@ function renderCard(data) {
   court.textContent = data.current_court || "";
   card.appendChild(court);
 
+    // Add click handler
+  card.style.cursor = "pointer";
+  card.addEventListener("click", () => {
+    // open new tab with query parameters to identify the case
+    const url = `case.html?category=${encodeURIComponent(data._category)}&file=${encodeURIComponent(filename)}`;
+    window.open(url, "_blank");
+  });
+
   return card;
 }
 
@@ -235,7 +243,7 @@ function applyFiltersAndRender() {
   // render cards by category
   for (const c of filtered) {
     const container = document.getElementById(categories[c._category]);
-    if (container) container.appendChild(renderCard(c));
+    if (container) container.appendChild(renderCard(c, file));
   }
 }
 
