@@ -142,6 +142,17 @@ function specialText(data) {
   }
 }
 
+function formatDate(isoDate) {
+  if (!isoDate) return "";
+  const d = new Date(isoDate);
+  if (isNaN(d)) return "";
+  return d.toLocaleDateString("uk-UA", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
 function renderCard(data) {
   const card = document.createElement("div");
   card.className = "card";
@@ -155,6 +166,17 @@ function renderCard(data) {
   subtitle.className = "card-subtitle";
   subtitle.textContent = `${data.case_number || ""} | ${data.procedure || ""}`;
   card.appendChild(subtitle);
+
+  // Add submission date line
+  if (data.submission_date) {
+    const dateDiv = document.createElement("div");
+    dateDiv.className = "submission-date";
+    dateDiv.textContent = `Дата подання: ${formatDate(data.submission_date)}`;
+    dateDiv.style.color = "#555";
+    dateDiv.style.fontSize = "0.85rem";
+    dateDiv.style.marginBottom = "0.3rem";
+    card.appendChild(dateDiv);
+  }
 
   const statusSpan = document.createElement("span");
   statusSpan.className = "status " + statusClass(data.status);
@@ -173,6 +195,7 @@ function renderCard(data) {
 
   return card;
 }
+
 
 function clearCards() {
   for (const cat of Object.values(categories)) {

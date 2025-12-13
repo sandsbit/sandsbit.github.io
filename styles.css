@@ -54,18 +54,15 @@ h2 {
 
 .cards-container {
   margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem 1.5rem;
+}
+.card {
+  /* width: unset; remove any fixed width */
+  cursor: pointer;
 }
 
-.card {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
-  cursor: pointer;
-  transition: box-shadow 0.2s ease;
-}
 
 .card:hover {
   box-shadow: 0 3px 8px rgb(0 0 0 / 0.15);
