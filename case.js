@@ -52,18 +52,45 @@ function renderCase(data) {
   container.innerHTML = ""; // clear previous content
 
   // --- Caption with Назва, Номер справи, Стан ---
-  const caption = document.createElement("div");
-  caption.style.marginBottom = "1rem";
-  caption.innerHTML = `
-    <h1 style="margin:0;">${data.title || "Без назви"}</h1>
-    <p style="margin: 0.2rem 0; font-weight: 600;">
-      Номер справи: ${data.case_number || "—"} |
-      <span class="status ${statusClass(data.status)}" style="padding: 0.15em 0.5em; border-radius: 1rem; font-size: 1rem; font-weight: 700;">
-        ${data.status || "Невідомий стан"}
-      </span>
-    </p>
-  `;
-  container.appendChild(caption);
+// Caption container for title, case number (without label), and status
+    const caption = document.createElement("div");
+    caption.style.marginBottom = "1rem";
+
+    // Title
+    const title = document.createElement("h2");
+    title.textContent = data.title || "Без назви";
+    caption.appendChild(title);
+
+    // Номер справи (without label)
+    const caseNum = document.createElement("div");
+    caseNum.textContent = data.case_number || "";
+    caseNum.style.fontSize = "1.1rem";
+    caseNum.style.marginTop = "0.25rem";
+    caseNum.style.fontWeight = "600";
+    caption.appendChild(caseNum);
+
+    // Стан (status) with styled span
+    const statusSpan = document.createElement("span");
+    statusSpan.className = "status " + statusClass(data.status);
+    statusSpan.textContent = data.status || "Невідомий стан";
+    statusSpan.style.marginLeft = "0.75rem";
+    caption.appendChild(statusSpan);
+
+    // Append caption to container
+    container.appendChild(caption);
+
+    const linkAllDecisions = document.createElement("a");
+linkAllDecisions.href = `https://court.opendatabot.ua/cause/${encodeURIComponent(data.case_number || "")}`;
+linkAllDecisions.textContent = "Усі рішення по справі";
+linkAllDecisions.target = "_blank";
+linkAllDecisions.rel = "noopener noreferrer";
+linkAllDecisions.style.display = "block";
+linkAllDecisions.style.marginTop = "0.5rem";
+linkAllDecisions.style.color = "#007bff";
+linkAllDecisions.style.textDecoration = "underline";
+
+caption.appendChild(linkAllDecisions);
+
 
   // --- Загальна інформація ---
   const generalSection = document.createElement("section");

@@ -142,20 +142,29 @@ h2 {
 
 /* Optional enhancements for progress table */
 #case-details table {
-  font-family: inherit;
-  font-size: 0.95rem;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+#case-details table tr:nth-child(even) {
+  background-color: #f7f9fc; /* very light blue-gray for even rows */
 }
 
 #case-details table td {
-  border: none;
+  padding: 0.4rem 0.75rem;
 }
 
-#case-details h1, #case-details h2, #case-details h3 {
+#case-details table td:nth-child(1) {
+  background-color: #e6eef9; /* pale blue for first column */
   color: #222;
+  width: 30%;
+  font-weight: 600;
 }
 
 #case-details table td:nth-child(2) {
-  background-color: #f0f8ff; /* AliceBlue, light but distinct from white */
-  color: #222; /* dark text for readability */
+  background-color: #cde0ff; /* stronger, distinct light blue for second column */
+  color: #222;
 }
+
 
