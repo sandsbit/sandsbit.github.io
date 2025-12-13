@@ -73,7 +73,7 @@ function renderCase(data) {
     <p><strong>Тип провадження в суді першої інстанції:</strong> ${data.first_instance_type || ""}</p>
     <p><strong>Дата подання:</strong> ${formatDate(data.submission_date)}</p>
     <p><strong>Поточний суд:</strong> ${data.current_court || ""}</p>
-    <p><strong>Ціна позову:</strong> ${data.claim_price != null ? data.claim_price : ""}</p>
+   <p><strong>Ціна позову:</strong> ${data.claim_price === 0 ? "позов немайнового характеру" : data.claim_price ?? ""}</p>
     <p><strong>Опис позову:</strong> про ${data.claim_description || "—"}</p>
   `;
   container.appendChild(generalSection);

@@ -154,3 +154,8 @@ h2 {
   color: #222;
 }
 
+#case-details table td:nth-child(2) {
+  background-color: #f0f8ff; /* AliceBlue, light but distinct from white */
+  color: #222; /* dark text for readability */
+}
+
