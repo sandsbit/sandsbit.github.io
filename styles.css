@@ -139,3 +139,18 @@ h2 {
   font-size: 0.9rem;
   color: #444;
 }
+
+/* Optional enhancements for progress table */
+#case-details table {
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+#case-details table td {
+  border: none;
+}
+
+#case-details h1, #case-details h2, #case-details h3 {
+  color: #222;
+}
+

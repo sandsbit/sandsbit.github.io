@@ -36,23 +36,36 @@ function formatDate(isoDate) {
 
 function renderCase(data) {
   const container = document.getElementById("case-details");
-  container.innerHTML = ""; // clear previous
+  container.innerHTML = ""; // clear previous content
 
-  // Загальна інформація
+  // --- Caption with Назва, Номер справи, Стан ---
+  const caption = document.createElement("div");
+  caption.style.marginBottom = "1rem";
+  caption.innerHTML = `
+    <h1 style="margin:0;">${data.title || "Без назви"}</h1>
+    <p style="margin: 0.2rem 0; font-weight: 600;">
+      Номер справи: ${data.case_number || "—"} |
+      <span class="status ${statusClass(data.status)}" style="padding: 0.15em 0.5em; border-radius: 1rem; font-size: 1rem; font-weight: 700;">
+        ${data.status || "Невідомий стан"}
+      </span>
+    </p>
+  `;
+  container.appendChild(caption);
+
+  // --- Загальна інформація ---
   const generalSection = document.createElement("section");
   generalSection.id = "general-info";
   generalSection.innerHTML = `
     <h2>Загальна інформація</h2>
-    <p><strong>Назва:</strong> ${data.title || ""}</p>
-    <p><strong>Номер справи:</strong> ${data.case_number || ""}</p>
     <p><strong>Тип провадження в суді першої інстанції:</strong> ${data.first_instance_type || ""}</p>
     <p><strong>Дата подання:</strong> ${formatDate(data.submission_date)}</p>
     <p><strong>Поточний суд:</strong> ${data.current_court || ""}</p>
     <p><strong>Ціна позову:</strong> ${data.claim_price != null ? data.claim_price : ""}</p>
+    <p><strong>Опис позову:</strong> про ${data.claim_description || "—"}</p>
   `;
   container.appendChild(generalSection);
 
-  // Провадження (from data.proceedings)
+  // --- Провадження ---
   const provadzhennyaSection = document.createElement("section");
   provadzhennyaSection.innerHTML = `<h2>Провадження</h2>`;
   const provadzhennyaList = document.createElement("ul");
@@ -72,7 +85,7 @@ function renderCase(data) {
   provadzhennyaSection.appendChild(provadzhennyaList);
   container.appendChild(provadzhennyaSection);
 
-  // Сторони та треті особи (bold status)
+  // --- Сторони та треті особи ---
   const partiesSection = document.createElement("section");
   partiesSection.innerHTML = `<h2>Сторони та треті особи</h2>`;
   const partiesList = document.createElement("ul");
@@ -92,7 +105,7 @@ function renderCase(data) {
   partiesSection.appendChild(partiesList);
   container.appendChild(partiesSection);
 
-  // Інші суди (right after parties)
+  // --- Інші суди ---
   const othersSection = document.createElement("section");
   othersSection.innerHTML = `<h2>Інші суди</h2>`;
   const othersList = document.createElement("ul");
@@ -112,7 +125,7 @@ function renderCase(data) {
   othersSection.appendChild(othersList);
   container.appendChild(othersSection);
 
-  // Судовий склад
+  // --- Судовий склад ---
   const courtSection = document.createElement("section");
   courtSection.innerHTML = `<h2>Склад суду</h2>`;
 
@@ -136,7 +149,7 @@ function renderCase(data) {
   }
   container.appendChild(courtSection);
 
-  // Позовні вимоги — numbered list
+  // --- Позовні вимоги (numbered list) ---
   const claimsSection = document.createElement("section");
   claimsSection.innerHTML = `<h2>Позовні вимоги</h2>`;
   const claimsList = document.createElement("ol");
@@ -154,32 +167,56 @@ function renderCase(data) {
   claimsSection.appendChild(claimsList);
   container.appendChild(claimsSection);
 
-  // Опис позову
-  const descriptionSection = document.createElement("section");
-  descriptionSection.innerHTML = `<h2>Опис позову</h2><p>${data.claim_description || "Немає даних"}</p>`;
-  container.appendChild(descriptionSection);
-
-  // Хід справи (history)
+  // --- Хід справи (styled table) ---
   const progressSection = document.createElement("section");
   progressSection.innerHTML = `<h2>Хід справи</h2>`;
-  const progressList = document.createElement("ul");
+
+  const table = document.createElement("table");
+  table.style.width = "100%";
+  table.style.borderCollapse = "collapse";
+  table.style.marginTop = "0.5rem";
+
+  // Table body
+  const tbody = document.createElement("tbody");
 
   if (Array.isArray(data.history) && data.history.length > 0) {
-    data.history.forEach(item => {
-      const li = document.createElement("li");
-      const dateFormatted = formatDate(item.date);
-      li.textContent = `${dateFormatted}: ${item.event}`;
-      progressList.appendChild(li);
+    data.history.forEach((item, index) => {
+      const tr = document.createElement("tr");
+      tr.style.backgroundColor = index % 2 === 0 ? "#f9f9f9" : "#ffffff";
+
+      // Date cell - light background, bold
+      const tdDate = document.createElement("td");
+      tdDate.textContent = formatDate(item.date);
+      tdDate.style.padding = "0.4rem 0.75rem";
+      tdDate.style.backgroundColor = "#e8f0fe";  // soft blue
+      tdDate.style.fontWeight = "600";
+      tdDate.style.width = "25%";
+      tr.appendChild(tdDate);
+
+      // Event cell - white background, normal text
+      const tdEvent = document.createElement("td");
+      tdEvent.textContent = item.event;
+      tdEvent.style.padding = "0.4rem 0.75rem";
+      tdEvent.style.backgroundColor = "#fff";
+      tr.appendChild(tdEvent);
+
+      tbody.appendChild(tr);
     });
   } else {
-    const li = document.createElement("li");
-    li.textContent = "Немає даних";
-    progressList.appendChild(li);
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 2;
+    td.textContent = "Немає даних";
+    td.style.padding = "0.4rem 0.75rem";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
   }
 
-  progressSection.appendChild(progressList);
+  table.appendChild(tbody);
+  progressSection.appendChild(table);
   container.appendChild(progressSection);
 }
+
 
 
 loadCase();
