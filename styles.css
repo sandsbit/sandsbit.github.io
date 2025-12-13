@@ -159,6 +159,7 @@ h2 {
   background-color: #ffffff; /* pure white */
 }
 
+
 #case-details table td {
   padding: 0.5rem 0.8rem;
   vertical-align: top;
@@ -168,7 +169,7 @@ h2 {
 
 #case-details table td:nth-child(1) {
   font-weight: 600;
-  width: 30%;
+  width: 10%;
   /* no bg-color here to keep full row color */
 }
 
