@@ -86,16 +86,19 @@ async function loadAllCases() {
     for (const file of files) {
       promises.push(
         loadCase(cat, file).then((data) => {
-          if (data) {
-            data._category = cat;
-            data._file = file;
-            allCases.push(data);
-          }
-        });
+  if (data) {
+    data._category = cat;
+    data._file = file;
+    allCases.push(data);
+  }
+})
+      );
     }
   }
   await Promise.all(promises);
 }
+
+
 
 // -------------- Rendering --------------
 
