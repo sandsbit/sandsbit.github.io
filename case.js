@@ -210,47 +210,29 @@ caption.appendChild(linkAllDecisions);
   // --- Хід справи (styled table) ---
   const progressSection = document.createElement("section");
   progressSection.innerHTML = `<h2>Хід справи</h2>`;
-
- const table = document.createElement("table");
-// remove inline styles for table - CSS will handle it
-// table.style.width = "100%";
-// table.style.borderCollapse = "collapse";
-// table.style.marginTop = "0.5rem";
-
+const table = document.createElement("table");
 const tbody = document.createElement("tbody");
 
 if (Array.isArray(data.history) && data.history.length > 0) {
-  data.history.forEach((item, index) => {
+  for (let i = data.history.length - 1; i >= 0; i--) {
+    const item = data.history[i];
     const tr = document.createElement("tr");
-    // remove inline backgroundColor for alternating rows
-    // tr.style.backgroundColor = index % 2 === 0 ? "#f9f9f9" : "#ffffff";
-    // CSS will do alternating rows
 
     const tdDate = document.createElement("td");
     tdDate.textContent = formatDate(item.date);
-    // remove inline styles for padding, bg color, font weight, width
-    // tdDate.style.padding = "0.4rem 0.75rem";
-    // tdDate.style.backgroundColor = "#e8f0fe";
-    // tdDate.style.fontWeight = "600";
-    // tdDate.style.width = "25%";
     tr.appendChild(tdDate);
 
     const tdEvent = document.createElement("td");
     tdEvent.textContent = item.event;
-    // remove inline styles for padding, bg color
-    // tdEvent.style.padding = "0.4rem 0.75rem";
-    // tdEvent.style.backgroundColor = "#fff";
     tr.appendChild(tdEvent);
 
     tbody.appendChild(tr);
-  });
+  }
 } else {
   const tr = document.createElement("tr");
   const td = document.createElement("td");
   td.colSpan = 2;
   td.textContent = "Немає даних";
-  // remove inline padding style if you want consistent styling
-  // td.style.padding = "0.4rem 0.75rem";
   tr.appendChild(td);
   tbody.appendChild(tr);
 }
