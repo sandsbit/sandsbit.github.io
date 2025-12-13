@@ -21,6 +21,18 @@ async function loadCase() {
   renderCase(data);
 }
 
+function formatDate(isoDate) {
+  if (!isoDate) return "";
+  const d = new Date(isoDate);
+  if (isNaN(d)) return "";
+  return d.toLocaleDateString("uk-UA", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+
 
 function renderCase(data) {
   const container = document.getElementById("case-details");
