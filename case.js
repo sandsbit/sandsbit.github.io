@@ -33,6 +33,18 @@ function formatDate(isoDate) {
 }
 
 
+function statusClass(status) {
+  if (status === "Подано") return "status-podano";
+  if (status === "Розглянуто") return "status-rozglyanuto";
+  if (status === "Набрало законної сили, виконанню не підлягає")
+    return "status-final";
+  if (status === "Виконується" || status === "Виконано")
+    return "status-execution";
+  if (status === "Відмовлено в розгляді або справку відкликано")
+    return "status-rejected";
+  re
+
+
 
 function renderCase(data) {
   const container = document.getElementById("case-details");
