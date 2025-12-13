@@ -33,6 +33,7 @@ function formatDate(isoDate) {
 }
 
 
+
 function statusClass(status) {
   if (status === "Подано") return "status-podano";
   if (status === "Розглянуто") return "status-rozglyanuto";
@@ -42,8 +43,8 @@ function statusClass(status) {
     return "status-execution";
   if (status === "Відмовлено в розгляді або справку відкликано")
     return "status-rejected";
-  re
-
+  return "status-other";
+}
 
 
 function renderCase(data) {
