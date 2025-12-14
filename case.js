@@ -177,7 +177,9 @@ caption.appendChild(linkAllDecisions);
       if (Array.isArray(instance.panel)) {
         instance.panel.forEach(member => {
           const li = document.createElement("li");
-          li.textContent = `${member.name} (${member.status})`;
+          li.textContent = member.status
+  ? `${member.name} (${member.status})`
+  : member.name;
           panelList.appendChild(li);
         });
       }

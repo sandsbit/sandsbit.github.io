@@ -1,6 +1,6 @@
 {
   "personal": ["1.json", "2.json", "3.json"],
-  "representation": [],
-  "other": []
+  "representation": ["1.json", "2.json", "3.json"],
+  "other": ["1.json", "2.json"]
 }
 
