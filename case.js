@@ -41,7 +41,7 @@ function statusClass(status) {
     return "status-final";
   if (status === "Виконується" || status === "Виконано")
     return "status-execution";
-  if (status === "Відмовлено в розгляді або справку відкликано")
+  if (status === "Відмовлено в розгляді або справу відкликано")
     return "status-rejected";
   return "status-other";
 }
