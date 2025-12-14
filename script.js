@@ -204,7 +204,7 @@ function renderCard(data) {
   const url = new URL("case.html", window.location.origin + window.location.pathname.replace(/index\.html$/, ""));
   url.searchParams.set("category", data._category);
   url.searchParams.set("file", data._file);
-  wwindow.location.href = url.toString();
+  window.location.href = url.toString();
 });
 
   return card;
