@@ -82,8 +82,6 @@ function renderCase(data) {
     const linkAllDecisions = document.createElement("a");
 linkAllDecisions.href = `https://court.opendatabot.ua/cause/${encodeURIComponent(data.case_number || "")}`;
 linkAllDecisions.textContent = "Усі рішення по справі";
-linkAllDecisions.target = "_blank";
-linkAllDecisions.rel = "noopener noreferrer";
 linkAllDecisions.style.display = "block";
 linkAllDecisions.style.marginTop = "0.5rem";
 linkAllDecisions.style.color = "#007bff";
@@ -177,9 +175,11 @@ caption.appendChild(linkAllDecisions);
       if (Array.isArray(instance.panel)) {
         instance.panel.forEach(member => {
           const li = document.createElement("li");
-          li.textContent = member.status
-  ? `${member.name} (${member.status})`
-  : member.name;
+          const status = (member.status || "").trim();
+
+          li.textContent = status
+            ? `${member.name} (${status})`
+            : member.name;
           panelList.appendChild(li);
         });
       }
